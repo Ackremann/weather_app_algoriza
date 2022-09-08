@@ -184,47 +184,56 @@ class SunriseSunsetWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(25), color: Colors.grey[700]),
-      padding: const EdgeInsets.all(10),
-      width: double.infinity,
-      height: MediaQuery.of(context).size.height / 5,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Column(
+    final cubit = HomeCubit.of(context);
+    final weather = cubit.weather;
+    return BlocBuilder(
+      bloc: cubit,
+      builder: (context, state) {
+        return Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(25), color: Colors.grey[700]),
+          padding: const EdgeInsets.all(10),
+          width: double.infinity,
+          height: MediaQuery.of(context).size.height / 5,
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Column(
-                children: const [
-                  Text('Sunrise'),
-                  Text('5:21'),
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Column(
+                    children: [
+                      Text(DateTime.fromMillisecondsSinceEpoch(
+                              weather!.sys!.sunrise!)
+                          .toString()),
+                      Text('5:21'),
+                    ],
+                  ),
+                  const Icon(
+                    Icons.sunny_snowing,
+                    size: 60,
+                  )
                 ],
               ),
-              const Icon(
-                Icons.sunny_snowing,
-                size: 60,
-              )
-            ],
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
               Column(
-                children: const [
-                  Text('Sunrise'),
-                  Text('5:21'),
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Column(
+                    children: const [
+                      Text('Sunrise'),
+                      Text('5:21'),
+                    ],
+                  ),
+                  const Icon(
+                    Icons.sunny_snowing,
+                    size: 60,
+                  )
                 ],
               ),
-              const Icon(
-                Icons.sunny_snowing,
-                size: 60,
-              )
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -290,6 +299,7 @@ class MainWeatherInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = HomeCubit.of(context);
+    final weather = cubit.weather;
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         return Column(
@@ -299,7 +309,7 @@ class MainWeatherInfo extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 15),
               child: IconButton(
                 onPressed: () => scaffoldKey.currentState!.openDrawer(),
-                icon: Icon(
+                icon: const Icon(
                   Icons.branding_watermark_rounded,
                 ),
               ),
@@ -308,7 +318,7 @@ class MainWeatherInfo extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${cubit.weather!.main!.temp}',
+                  '${weather!.main!.temp!.toInt()}°',
                   style: Theme.of(context).textTheme.displayMedium,
                 ),
                 const Icon(
@@ -323,7 +333,7 @@ class MainWeatherInfo extends StatelessWidget {
               child: Row(
                 children: [
                   Text(
-                    '${cubit.weather!.name}',
+                    '${weather.name}',
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   const Icon(Icons.location_on),
@@ -336,8 +346,9 @@ class MainWeatherInfo extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                      '${cubit.weather!.main!.tempMin} / ${cubit.weather!.main!.tempMax} Feels like ${cubit.weather!.main!.feelsLike}'),
-                  Text('sun, 2:55 pm'),
+                      '${weather.main!.tempMin!.toInt()}° / ${weather.main!.tempMax!.toInt()}° Feels like ${weather.main!.feelsLike!.toInt()}°'),
+                  Text(
+                      'sun, ${DateTime.now().hour}:${DateTime.now().minute} pm'),
                 ],
               ),
             ),
