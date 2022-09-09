@@ -1,6 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconify_flutter/iconify_flutter.dart';
+import 'package:iconify_flutter/icons/ic.dart';
+import 'package:iconify_flutter/icons/wi.dart';
+
+import 'package:intl/intl.dart';
 import 'package:weather_app/features/home/presentation/cubit/home_cubit.dart';
+
+import '../../data/models/weather_model.dart';
 
 class HomeView extends StatelessWidget {
   HomeView({Key? key}) : super(key: key);
@@ -17,7 +25,7 @@ class HomeView extends StatelessWidget {
         body: BlocBuilder<HomeCubit, HomeState>(
           builder: (context, state) {
             return state is HomeLodaing
-                ? Center(
+                ? const Center(
                     child: CircularProgressIndicator(),
                   )
                 : SafeArea(
@@ -29,13 +37,13 @@ class HomeView extends StatelessWidget {
                           children: [
                             MainWeatherInfo(scaffoldKey: scaffoldKey),
                             const SizedBox(height: 20),
-                            TempByHourListViewWidget(),
+                            const TempByHourListViewWidget(),
                             const SizedBox(height: 20),
-                            TempByDayListViewWidget(),
+                            const TempByDayListViewWidget(),
                             const SizedBox(height: 20),
-                            SunriseSunsetWidget(),
+                            const SunriseSunsetWidget(),
                             const SizedBox(height: 20),
-                            UvWindHumidityWidget(),
+                            const UvWindHumidityWidget(),
                           ],
                         ),
                       ),
@@ -57,37 +65,52 @@ class HomeView extends StatelessWidget {
                     ),
                   ),
                 ),
-                ListTile(
+                const ListTile(
                   leading: Icon(Icons.star_rate_rounded),
                   title: Text('Favorite Location'),
                   trailing: Icon(Icons.error_outline),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 15),
+                const Padding(
+                  padding: EdgeInsets.only(left: 15),
                   child: ListTile(
                     leading: Icon(
                       Icons.place,
                       size: 20,
                     ),
                     title: Text('Mansoura'),
-                    trailing: Text('33°'),
+                    trailing: Text(
+                      '33°',
+                      style: TextStyle(color: Colors.orange),
+                    ),
                   ),
                 ),
-                Divider(color: Colors.white),
-                ListTile(
+                const Divider(color: Colors.white, endIndent: 20, indent: 20),
+                const ListTile(
                   leading: Icon(Icons.add_location_rounded),
                   title: Text('Favorite Location'),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 15),
+                const Padding(
+                  padding: EdgeInsets.only(left: 50),
                   child: ListTile(
-                    leading: Icon(
-                      Icons.place,
-                      size: 20,
-                    ),
                     title: Text('Mansoura'),
-                    trailing: Text('33°'),
+                    trailing: Text(
+                      '33°',
+                      style: TextStyle(color: Colors.orange),
+                    ),
                   ),
+                ),
+                OutlinedButton(
+                  onPressed: () {},
+                  child: const Text('Mange Location'),
+                ),
+                const Divider(color: Colors.white, endIndent: 20, indent: 20),
+                const ListTile(
+                  leading: Icon(Icons.error_outline),
+                  title: Text('Report Wrong Location'),
+                ),
+                const ListTile(
+                  leading: Icon(Icons.headphones),
+                  title: Text('Contact Us'),
                 ),
               ],
             ),
@@ -105,6 +128,9 @@ class UvWindHumidityWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cubit = HomeCubit.of(context);
+    final weather = cubit.weather;
+    double? uv = weather!.current!.uv;
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25), color: Colors.grey[700]),
@@ -118,13 +144,14 @@ class UvWindHumidityWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Column(
-                children: const [
-                  Icon(
-                    Icons.sunny_snowing,
-                    size: 40,
-                  ),
-                  Text('Sunrise'),
-                  Text('5:21'),
+                children: [
+                  Iconify(Wi.moon_full, size: 40, color: Colors.yellow),
+                  const Text('UV'),
+                  Text(uv! < 3
+                      ? 'Low'
+                      : uv >= 3 || uv <= 5
+                          ? 'Moderate'
+                          : 'Hight'),
                 ],
               ),
             ],
@@ -139,13 +166,10 @@ class UvWindHumidityWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Column(
-                children: const [
-                  Icon(
-                    Icons.sunny_snowing,
-                    size: 40,
-                  ),
-                  Text('Sunrise'),
-                  Text('5:21'),
+                children: [
+                  const Iconify(Wi.strong_wind, size: 40, color: Colors.white),
+                  const Text('Wind'),
+                  Text('${weather.current!.windKph}%'),
                 ],
               ),
             ],
@@ -160,13 +184,14 @@ class UvWindHumidityWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Column(
-                children: const [
-                  Icon(
-                    Icons.sunny_snowing,
+                children: [
+                  Iconify(
+                    Wi.humidity,
                     size: 40,
+                    color: Colors.lightBlue[300],
                   ),
-                  Text('Sunrise'),
-                  Text('5:21'),
+                  const Text('Humidity'),
+                  Text('${weather.current!.humidity}%'),
                 ],
               ),
             ],
@@ -203,31 +228,33 @@ class SunriseSunsetWidget extends StatelessWidget {
                 children: [
                   Column(
                     children: [
-                      Text(DateTime.fromMillisecondsSinceEpoch(
-                              weather!.sys!.sunrise!)
+                      const Text('Sunrise'),
+                      Text(weather!.forecast!.forecastday![0].astro!.sunrise
                           .toString()),
-                      Text('5:21'),
+                      const Iconify(
+                        Wi.sunrise,
+                        size: 70,
+                        color: Colors.orange,
+                      ),
                     ],
                   ),
-                  const Icon(
-                    Icons.sunny_snowing,
-                    size: 60,
-                  )
                 ],
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Column(
-                    children: const [
-                      Text('Sunrise'),
-                      Text('5:21'),
+                    children: [
+                      const Text('Sunset'),
+                      Text(weather.forecast!.forecastday![0].astro!.sunset
+                          .toString()),
+                      const Iconify(
+                        Wi.sunset,
+                        size: 70,
+                        color: Colors.orange,
+                      ),
                     ],
                   ),
-                  const Icon(
-                    Icons.sunny_snowing,
-                    size: 60,
-                  )
                 ],
               ),
             ],
@@ -245,6 +272,8 @@ class TempByDayListViewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cubit = HomeCubit.of(context);
+    final weather = cubit.weather;
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25), color: Colors.grey[700]),
@@ -256,9 +285,12 @@ class TempByDayListViewWidget extends StatelessWidget {
           height: 20,
         ),
         scrollDirection: Axis.vertical,
-        itemCount: 10,
+        itemCount: 7,
         itemBuilder: (context, index) {
-          return const TempByDayWidget();
+          final forcatByDay = weather!.forecast!.forecastday![index];
+          return TempByDayWidget(
+            forcatByDay: forcatByDay,
+          );
         },
       ),
     );
@@ -272,22 +304,32 @@ class TempByHourListViewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(25), color: Colors.grey[700]),
-      padding: const EdgeInsets.all(10),
-      width: double.infinity,
-      height: 150,
-      child: ListView.separated(
-        separatorBuilder: (context, index) => const SizedBox(
-          width: 20,
-        ),
-        scrollDirection: Axis.horizontal,
-        itemCount: 10,
-        itemBuilder: (context, index) {
-          return const TempByHourWidget();
-        },
-      ),
+    final cubit = HomeCubit.of(context);
+    final weather = cubit.weather;
+    return BlocBuilder(
+      bloc: cubit,
+      builder: (context, state) {
+        return Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(25), color: Colors.grey[700]),
+          padding: const EdgeInsets.all(10),
+          width: double.infinity,
+          height: 150,
+          child: ListView.separated(
+            separatorBuilder: (context, index) => const SizedBox(
+              width: 20,
+            ),
+            scrollDirection: Axis.horizontal,
+            itemCount: 24,
+            itemBuilder: (context, index) {
+              final forcatByHour =
+                  weather!.forecast!.forecastday![0].hour![index];
+
+              return TempByHourWidget(forcatByHour: forcatByHour);
+            },
+          ),
+        );
+      },
     );
   }
 }
@@ -300,6 +342,8 @@ class MainWeatherInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = HomeCubit.of(context);
     final weather = cubit.weather;
+    final date = weather!.location!.localtime!.split(" ");
+    DateTime day = DateTime.parse(date[0]);
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         return Column(
@@ -310,7 +354,7 @@ class MainWeatherInfo extends StatelessWidget {
               child: IconButton(
                 onPressed: () => scaffoldKey.currentState!.openDrawer(),
                 icon: const Icon(
-                  Icons.branding_watermark_rounded,
+                  Icons.menu_rounded,
                 ),
               ),
             ),
@@ -318,12 +362,12 @@ class MainWeatherInfo extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${weather!.main!.temp!.toInt()}°',
+                  '${weather.current?.tempC}°',
                   style: Theme.of(context).textTheme.displayMedium,
                 ),
-                const Icon(
-                  Icons.sunny,
-                  size: 60,
+                Iconify(
+                  Ic.round_wb_sunny,
+                  size: 70,
                   color: Colors.orangeAccent,
                 ),
               ],
@@ -333,7 +377,7 @@ class MainWeatherInfo extends StatelessWidget {
               child: Row(
                 children: [
                   Text(
-                    '${weather.name}',
+                    '${weather.location!.name}',
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   const Icon(Icons.location_on),
@@ -346,9 +390,10 @@ class MainWeatherInfo extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                      '${weather.main!.tempMin!.toInt()}° / ${weather.main!.tempMax!.toInt()}° Feels like ${weather.main!.feelsLike!.toInt()}°'),
+                    '${weather.forecast!.forecastday![0].day!.mintempC}° / ${weather.forecast!.forecastday![0].day!.maxtempC}° Feels like ${weather.current!.feelslikeC}°',
+                  ),
                   Text(
-                      'sun, ${DateTime.now().hour}:${DateTime.now().minute} pm'),
+                      '${DateFormat("EEEE").format(day)}, ${DateTime.now().hour - 12}:${DateTime.now().minute} pm'),
                 ],
               ),
             ),
@@ -362,36 +407,44 @@ class MainWeatherInfo extends StatelessWidget {
 class TempByDayWidget extends StatelessWidget {
   const TempByDayWidget({
     Key? key,
+    required this.forcatByDay,
   }) : super(key: key);
-
+  final Forecastday? forcatByDay;
   @override
   Widget build(BuildContext context) {
-    return Container(
+    DateTime day = DateTime.parse(forcatByDay!.date!);
+    return SizedBox(
       width: double.infinity,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            width: MediaQuery.of(context).size.width / 3,
+          SizedBox(
+            width: MediaQuery.of(context).size.width / 2.5,
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Today',
+                  DateTime.now().day == day.day
+                      ? 'Today'
+                      : DateFormat("EEEE").format(day),
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                SizedBox(width: 40),
-                Icon(
-                  Icons.water_drop,
-                  size: 15,
-                ),
-                Text('0%'),
+                // const SizedBox(width: 10),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.water_drop,
+                      size: 15,
+                    ),
+                    Text('${forcatByDay!.day!.avghumidity.toInt()}%'),
+                  ],
+                )
               ],
             ),
           ),
-          Container(
-            width: MediaQuery.of(context).size.width / 2.5,
+          SizedBox(
+            width: MediaQuery.of(context).size.width / 3,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 const Icon(
                   Icons.sunny,
@@ -403,7 +456,8 @@ class TempByDayWidget extends StatelessWidget {
                   color: Colors.orange,
                   size: 30,
                 ),
-                const Text('33°/24'),
+                Text(
+                    '${forcatByDay!.day!.mintempC!.toInt()}°/${forcatByDay!.day!.maxtempC!.toInt()}°'),
               ],
             ),
           )
@@ -416,16 +470,18 @@ class TempByDayWidget extends StatelessWidget {
 class TempByHourWidget extends StatelessWidget {
   const TempByHourWidget({
     Key? key,
+    required this.forcatByHour,
   }) : super(key: key);
-
+  final Hour forcatByHour;
   @override
   Widget build(BuildContext context) {
+    DateTime hour = DateTime.parse(forcatByHour.time!);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text('3 pm'),
+          Text(DateFormat("h a").format(hour)),
           const SizedBox(height: 10),
           const Icon(
             Icons.sunny,
@@ -433,16 +489,16 @@ class TempByHourWidget extends StatelessWidget {
             size: 30,
           ),
           const SizedBox(height: 10),
-          const Text('33°'),
+          Text('${forcatByHour.tempC}°'),
           const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Icon(
+            children: [
+              const Icon(
                 Icons.water_drop,
                 size: 15,
               ),
-              Text('0%')
+              Text('${forcatByHour.humidity}%')
             ],
           ),
         ],

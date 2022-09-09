@@ -1,7 +1,6 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:weather_app/core/router/router.dart';
-import 'package:weather_app/features/home/presentation/pages/home_view.dart';
 
 import 'features/home/presentation/pages/splash_view.dart';
 
