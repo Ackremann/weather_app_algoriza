@@ -1,16 +1,9 @@
 # weather_app
 
-A new Flutter project.
+weather app usuing cord and city name.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+ 
+  usuing cubit and weather api and getting forcast for 7 days.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+https://user-images.githubusercontent.com/59745489/189470509-ac6fd1f8-6ff8-4726-b874-0503f0f39be0.mp4
