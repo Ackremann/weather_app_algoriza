@@ -10,3 +10,5 @@ abstract class HomeState extends Equatable {
 class HomeInitial extends HomeState {}
 
 class HomeLodaing extends HomeState {}
+
+class SearchLodaing extends HomeState {}

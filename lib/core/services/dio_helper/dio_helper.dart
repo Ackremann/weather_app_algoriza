@@ -20,9 +20,15 @@ class DioHelper {
     return response;
   }
 
-  static Future<Response<dynamic>> get(String cord) {
+  static Future<Response<dynamic>> get(String path) {
     final response = _dio.get(
-        'http://api.weatherapi.com/v1/forecast.json?key=bb35f7c7647c44ffbba00720220809&$cord&days=7&aqi=no&alerts=no');
+        'http://api.weatherapi.com/v1/forecast.json?key=bb35f7c7647c44ffbba00720220809&$path&days=7&aqi=no&alerts=no');
+    return response;
+  }
+
+  static Future<Response<dynamic>> getCityName(String cityName) {
+    final response = _dio.get(
+        'http://api.weatherapi.com/v1/search.json?key=bb35f7c7647c44ffbba00720220809&$cityName');
     return response;
   }
 }

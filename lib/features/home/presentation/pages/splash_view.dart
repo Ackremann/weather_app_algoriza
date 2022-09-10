@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:iconify_flutter/iconify_flutter.dart';
+import 'package:iconify_flutter/icons/fa6_solid.dart';
 import 'package:weather_app/core/router/router.dart';
 import 'package:weather_app/core/services/location_services/location_services.dart';
+import 'package:weather_app/features/home/presentation/cubit/home_cubit.dart';
 import 'package:weather_app/features/home/presentation/pages/home_view.dart';
+import 'package:weather_app/features/home/presentation/pages/search_view.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({Key? key}) : super(key: key);
@@ -15,25 +19,45 @@ class SplashView extends StatefulWidget {
 class _SplashViewState extends State<SplashView> {
   @override
   void initState() {
-    getCurrentLocation();
+    // getCurrentLocation();
     super.initState();
   }
 
   void getCurrentLocation() async {
-    final position = await LocationServices.getCurrentLocation();
-    print(position.altitude);
-    print(position.longitude);
-    print(LocationServices.currentPosition!.altitude);
-    print(LocationServices.currentPosition!.longitude);
+    // await LocationServices.getCurrentLocation();
     MagicRouter.navigateAndPopAll(HomeView());
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Column(
-        children: [Text('data')],
+    return BlocProvider(
+      create: (context) => HomeCubit(),
+      child: Scaffold(
+        body: Center(
+          child: Builder(builder: (context) {
+            final cubit = HomeCubit.of(context);
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      await LocationServices.getCurrentLocation();
+                      MagicRouter.navigateAndPopAll(HomeView());
+                    },
+                    child: Text('Get Weather By location (GPS)'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      MagicRouter.navigateAndPopAll(const SearchView());
+                    },
+                    child: Text('Get Weather By City Name'),
+                  )
+                ],
+              ),
+            );
+          }),
+        ),
       ),
     );
   }

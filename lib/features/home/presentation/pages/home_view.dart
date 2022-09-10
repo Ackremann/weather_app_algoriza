@@ -6,19 +6,24 @@ import 'package:iconify_flutter/icons/ic.dart';
 import 'package:iconify_flutter/icons/wi.dart';
 
 import 'package:intl/intl.dart';
+import 'package:weather_app/core/router/router.dart';
 import 'package:weather_app/features/home/presentation/cubit/home_cubit.dart';
+import 'package:weather_app/features/home/presentation/pages/search_view.dart';
 
 import '../../data/models/weather_model.dart';
 
 class HomeView extends StatelessWidget {
-  HomeView({Key? key}) : super(key: key);
+  HomeView({
+    Key? key,
+    this.path,
+  }) : super(key: key);
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
-
+  String? path;
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       lazy: false,
-      create: (context) => HomeCubit()..geCurrentWeather(),
+      create: (context) => HomeCubit()..geCurrentWeather(path: path),
       child: Scaffold(
         key: scaffoldKey,
         // backgroundColor: Colors.blue,
@@ -351,11 +356,21 @@ class MainWeatherInfo extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 15),
-              child: IconButton(
-                onPressed: () => scaffoldKey.currentState!.openDrawer(),
-                icon: const Icon(
-                  Icons.menu_rounded,
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: () => scaffoldKey.currentState!.openDrawer(),
+                    icon: const Icon(
+                      Icons.menu_rounded,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () =>
+                        MagicRouter.navigateAndPopAll(const SearchView()),
+                    icon: const Icon(CupertinoIcons.search),
+                  )
+                ],
               ),
             ),
             Row(
@@ -393,7 +408,7 @@ class MainWeatherInfo extends StatelessWidget {
                     '${weather.forecast!.forecastday![0].day!.mintempC}° / ${weather.forecast!.forecastday![0].day!.maxtempC}° Feels like ${weather.current!.feelslikeC}°',
                   ),
                   Text(
-                      '${DateFormat("EEEE").format(day)}, ${DateTime.now().hour - 12}:${DateTime.now().minute} pm'),
+                      '${DateFormat("EEEE").format(day)}, ${DateFormat("h:mma").format(DateTime.now())}'),
                 ],
               ),
             ),
